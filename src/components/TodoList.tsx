@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, memo, useTransition } from "react";
+import React, { useState, useCallback, memo, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaCheck, FaFlag, FaClock, FaTags, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
@@ -10,6 +10,9 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { SortableItem } from './SortableItem';
 import Image from 'next/image';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Todo } from '../types/todo';
 
 interface Todo {
   id: number;
@@ -228,6 +231,22 @@ const Stats = memo(({ total, completed }: { total: number; completed: number }) 
 ));
 
 Stats.displayName = 'Stats';
+
+interface TodoItemProps {
+  todo: Todo;
+  onDelete: (id: string) => void;
+  onToggle: (id: string) => void;
+  onEdit: (id: string, newText: string) => void;
+}
+
+interface DragItemProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
+  // ... existing code ...
+};
 
 export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
