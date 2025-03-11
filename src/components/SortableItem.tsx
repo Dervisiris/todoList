@@ -42,7 +42,7 @@ export function SortableItem({ id, todo, onToggle, onDelete, priorityColors }: S
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className={`group p-4 mb-2 rounded-lg flex items-center gap-4 cursor-move ${
-        todo.priority ? priorityColors[todo.priority] : 'bg-gray-105'
+        todo.priority ? priorityColors[todo.priority] : 'bg-gray-100'
       }`}
     >
       <input
