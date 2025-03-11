@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import TodoList from "@/components/TodoList";
 
 export default function Home() {
