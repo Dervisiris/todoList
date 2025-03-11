@@ -3,27 +3,21 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
-import { FaTrash, FaCheck, FaGripVertical, FaClock, FaTags } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { format } from 'date-fns';
+import { Todo } from '../types/todo';
 
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-  priority: 'low' | 'medium' | 'high';
-  category: string;
-  dueDate: Date | null;
-}
-
-interface Props {
+interface SortableItemProps {
+  id: string;
   todo: Todo;
-  id: number;
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
-  priorityColors: Record<string, string>;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  priorityColors: {
+    [key: string]: string;
+  };
 }
 
-export function SortableItem({ todo, id, onToggle, onDelete, priorityColors }: Props) {
+export function SortableItem({ id, todo, onToggle, onDelete, priorityColors }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -41,66 +35,45 @@ export function SortableItem({ todo, id, onToggle, onDelete, priorityColors }: P
     <motion.div
       ref={setNodeRef}
       style={style}
+      {...attributes}
+      {...listeners}
+      layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -100 }}
-      className={`group flex items-center justify-between p-4 rounded-lg ${
-        todo.completed ? "bg-green-50" : priorityColors[todo.priority]
-      } border border-gray-200 shadow-sm hover:shadow-md transition-all`}
+      exit={{ opacity: 0, y: -20 }}
+      className={`group p-4 mb-2 rounded-lg flex items-center gap-4 cursor-move ${
+        todo.priority ? priorityColors[todo.priority] : 'bg-gray-100'
+      }`}
     >
-      <div className="flex items-center gap-3">
-        <button
-          className="opacity-50 group-hover:opacity-100 cursor-grab active:cursor-grabbing"
-          {...attributes}
-          {...listeners}
-        >
-          <FaGripVertical className="text-gray-500" />
-        </button>
-        
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => onToggle(todo.id)}
-          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-            todo.completed
-              ? "border-green-500 bg-green-500"
-              : "border-gray-300"
-          }`}
-        >
-          {todo.completed && <FaCheck className="text-white text-sm" />}
-        </motion.button>
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => onToggle(todo.id)}
+        className="w-5 h-5 rounded border-2 border-purple-300 text-purple-500 focus:ring-purple-500"
+      />
+      
+      <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : ''}`}>
+        {todo.text}
+      </span>
 
-        <div className="flex flex-col">
-          <span
-            className={`${
-              todo.completed ? "line-through text-gray-500" : "text-gray-800"
-            }`}
-          >
-            {todo.text}
-          </span>
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
-              <FaTags className="text-purple-500" />
-              {todo.category}
-            </span>
-            {todo.dueDate && (
-              <span className="flex items-center gap-1">
-                <FaClock className="text-blue-500" />
-                {format(new Date(todo.dueDate), 'dd/MM/yyyy')}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      {todo.category && (
+        <span className="px-2 py-1 rounded bg-white/50 text-sm">
+          {todo.category}
+        </span>
+      )}
 
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+      {todo.dueDate && (
+        <span className="text-sm text-gray-600">
+          {format(new Date(todo.dueDate), 'dd/MM/yyyy')}
+        </span>
+      )}
+
+      <button
         onClick={() => onDelete(todo.id)}
-        className="text-red-500 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:text-red-500"
       >
         <FaTrash />
-      </motion.button>
+      </button>
     </motion.div>
   );
 } 

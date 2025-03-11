@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, memo, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaTrash, FaCheck, FaFlag, FaClock, FaTags, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaPlus, FaFlag, FaClock, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { format } from 'date-fns';
@@ -10,18 +10,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { SortableItem } from './SortableItem';
 import Image from 'next/image';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Todo } from '../types/todo';
-
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-  priority: 'low' | 'medium' | 'high';
-  category: string;
-  dueDate: Date | null;
-}
 
 const categories = ['İş', 'Kişisel', 'Alışveriş', 'Sağlık', 'Eğitim'];
 const priorityColors = {
@@ -232,22 +221,6 @@ const Stats = memo(({ total, completed }: { total: number; completed: number }) 
 
 Stats.displayName = 'Stats';
 
-interface TodoItemProps {
-  todo: Todo;
-  onDelete: (id: string) => void;
-  onToggle: (id: string) => void;
-  onEdit: (id: string, newText: string) => void;
-}
-
-interface DragItemProps {
-  id: string;
-  children: React.ReactNode;
-}
-
-const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
-  // ... existing code ...
-};
-
 export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
@@ -281,23 +254,24 @@ export default function TodoList() {
   const addTodo = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      setTodos(prev => [...prev, {
-        id: Date.now(),
+      const newTodo: Todo = {
+        id: String(Date.now()),
         text: input.trim(),
         completed: false,
         priority: selectedPriority,
         category: selectedCategory,
-        dueDate: selectedDate
-      }]);
+        dueDate: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined,
+        createdAt: new Date().toISOString()
+      };
+      setTodos(prev => [...prev, newTodo]);
       setInput("");
       setSelectedDate(null);
       setShowDatePicker(false);
-      // Yeni görev eklendiğinde son sayfaya git
       setCurrentPage(Math.ceil((todos.length + 1) / ITEMS_PER_PAGE) - 1);
     }
   }, [input, selectedPriority, selectedCategory, selectedDate, todos.length]);
 
-  const toggleTodo = useCallback((id: number) => {
+  const toggleTodo = useCallback((id: string) => {
     setTodos(prev =>
       prev.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
@@ -305,10 +279,9 @@ export default function TodoList() {
     );
   }, []);
 
-  const deleteTodo = useCallback((id: number) => {
+  const deleteTodo = useCallback((id: string) => {
     setTodos(prev => {
       const newTodos = prev.filter((todo) => todo.id !== id);
-      // Eğer sayfada başka görev kalmadıysa bir önceki sayfaya git
       if (newTodos.length <= currentPage * ITEMS_PER_PAGE && currentPage > 0) {
         setCurrentPage(currentPage - 1);
       }
@@ -316,12 +289,12 @@ export default function TodoList() {
     });
   }, [currentPage]);
 
-  const handleDragEnd = useCallback((event: any) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       setTodos((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+        const oldIndex = items.findIndex((item) => item.id === String(active.id));
+        const newIndex = items.findIndex((item) => item.id === String(over.id));
         return arrayMove(items, oldIndex, newIndex);
       });
     }
