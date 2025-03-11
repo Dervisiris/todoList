@@ -42,7 +42,7 @@ export function SortableItem({ id, todo, onToggle, onDelete, priorityColors }: S
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className={`group p-4 mb-2 rounded-lg flex items-center gap-4 cursor-move ${
-        todo.priority ? priorityColors[todo.priority] : 'bg-gray-100'
+        todo.priority ? priorityColors[todo.priority] : 'bg-gray-105'
       }`}
     >
       <input
@@ -57,13 +57,13 @@ export function SortableItem({ id, todo, onToggle, onDelete, priorityColors }: S
       </span>
 
       {todo.category && (
-        <span className="px-2 py-1 rounded bg-white/50 text-sm">
+        <span className="px-2 py-1 rounded bg-white/50 text-black">
           {todo.category}
         </span>
       )}
 
       {todo.dueDate && (
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-black">
           {format(new Date(todo.dueDate), 'dd/MM/yyyy')}
         </span>
       )}
