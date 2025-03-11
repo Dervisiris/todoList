@@ -52,7 +52,7 @@ export function SortableItem({ id, todo, onToggle, onDelete, priorityColors }: S
         className="w-5 h-5 rounded border-2 border-purple-300 text-purple-500 focus:ring-purple-500"
       />
       
-      <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : ''}`}>
+      <span className={`flex-1 ${todo.completed ? 'line-through text-gray-500' : 'text-black'}`}>
         {todo.text}
       </span>
 

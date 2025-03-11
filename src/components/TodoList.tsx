@@ -105,7 +105,7 @@ const TodoForm = memo(({ onSubmit, input, setInput, selectedCategory, setSelecte
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Yeni görev ekle..."
-          className="flex-1 px-4 py-2 rounded-lg border-2 border-purple-200 focus:border-purple-500 outline-none transition-all text-gray-900"
+          className="flex-1 px-4 py-2 rounded-lg border-2 border-purple-200 focus:border-purple-500 outline-none transition-all text-black"
         />
         <motion.button
           whileHover={{ scale: 1.05 }}
